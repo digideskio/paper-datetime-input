@@ -1,0 +1,94 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-date-picker/paper-date-picker.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-input/paper-input-container.html">
+<link rel="import" href="../paper-time-picker/paper-time-picker.html">
+
+<!--
+An element which provides UI for choosing a date and time.
+
+Example:
+
+    <paper-datetime-input datetime="{{datetime}}" label="Enter a date"></paper-datetime-input>
+
+-->
+<dom-module id="paper-datetime-input">
+  <template>
+    <paper-input id="input" on-tap="showDateDialog" label="[[label]]" value="[[strDate(datetime)]]"></paper-input>
+    <paper-dialog id="dateDialog" class="paper-date-picker-dialog" on-iron-overlay-closed="dateDialogClosed">
+      <paper-date-picker id="datePicker"></paper-date-picker>
+      <div class="buttons">
+        <paper-button dialog-confirm>Ok</paper-button>
+        <paper-button dialog-dismiss>Cancel</paper-button>
+      </div>
+    </paper-dialog>
+    <paper-dialog id="timeDialog" class="paper-time-picker-dialog" on-iron-overlay-closed="timeDialogClosed">
+      <paper-time-picker id="timePicker"></paper-time-picker>
+      <div class="buttons">
+        <paper-button dialog-confirm>Ok</paper-button>
+        <paper-button dialog-dismiss>Cancel</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+</dom-module>
+<script>
+  Polymer({
+
+    is: 'paper-datetime-input',
+
+    properties: {
+      datetime: {
+        reflectToAttribute: true,
+        type: Date,
+        value: new Date(),
+      },
+      label: {
+        reflectToAttribute: true,
+        type: String,
+        value: "",
+      },
+    },
+
+    created: function() {
+      this.tmpDate = new Date();
+    },
+
+    strDate: function(d) {
+      return d.toLocaleString();
+    },
+
+    showDateDialog: function() {
+      this.$.datePicker.date = new Date(this.datetime);
+      this.$.dateDialog.open();
+    },
+
+    showTimeDialog: function() {
+      this.$.timePicker.hour = this.datetime.getHours();
+      this.$.timePicker.minute = this.datetime.getMinutes();
+      this.$.timeDialog.open();
+    },
+
+    dateDialogClosed: function() {
+      if (this.$.dateDialog.closingReason.confirmed === true) {
+        this.tmpDate.setFullYear(this.$.datePicker.date.getFullYear());
+        this.tmpDate.setMonth(this.$.datePicker.date.getMonth());
+        this.tmpDate.setDate(this.$.datePicker.date.getDate());
+        this.showTimeDialog();
+      }
+    },
+
+    timeDialogClosed: function() {
+      if (this.$.timeDialog.closingReason.confirmed === true) {
+        this.tmpDate.setHours(this.$.timePicker.hour);
+        this.tmpDate.setMinutes(this.$.timePicker.minute);
+        this.tmpDate.setSeconds(0);
+        this.tmpDate.setMilliseconds(0);
+        this.datetime = this.tmpDate;
+        this.$.input.value = this.strDate(this.datetime);
+      }
+    },
+
+  });
+</script>
