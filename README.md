@@ -1,6 +1,8 @@
 # paper-datetime-input
 
-An element which provides UI for choosing a date and time.
+An element which imitates a paper-input and provides UI for choosing a
+date and time. Makes use of bendavis78's implementations of
+paper-date-picker and paper-time-picker.
 
 
 ## Example Usage
